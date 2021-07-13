@@ -7,3 +7,6 @@ esx-qalle-jail for ESX 1.1, Legacy - Made by qalle-git edited by Ice Cube 🧊#2
 * [swt_notifications] => https://github.com/Switty6/swt_notifications
 * [GTA_Notif] => https://github.com/FiveM-Resources/GTA_Notif
 * [mythic_notify] => https://github.com/thelindat/mythic_notify
+
+# Discord:
+* https://discord.gg/gCKZtn44Ns
