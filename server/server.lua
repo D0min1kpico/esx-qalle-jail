@@ -2,73 +2,103 @@ ESX                = nil
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
-RegisterCommand("jail", function(src, args, raw)
+RegisterCommand(Config.JailCommand, function(src, args, raw)
 
 	local xPlayer = ESX.GetPlayerFromId(src)
 
-	if xPlayer["job"]["name"] == "police" then
+	if xPlayer["job"]["name"] == Config.Job then
 
 		local jailPlayer = args[1]
 		local jailTime = tonumber(args[2])
 		local jailReason = args[3]
+		local prisoner = GetPlayerName(jailPlayer)
 
 		if GetPlayerName(jailPlayer) ~= nil then
 
 			if jailTime ~= nil then
 				JailPlayer(jailPlayer, jailTime)
-
-				TriggerClientEvent("esx:showNotification", src, GetPlayerName(jailPlayer) .. " Jailed for " .. jailTime .. " minutes!")
+				if Config.NEWNotif then
+					TriggerClientEvent("GTA_NUI_ShowNotif_client", src, Config.PlayerTxt..""..prisoner..""..Config.PlayerInf..""..jailTime.. " -m", "success")
+				else
+					TriggerClientEvent("esx:showNotification", src, Config.PlayerTxt..""..prisoner..""..Config.PlayerInf..""..jailTime.. " -m")
+				end
 				
 				if args[3] ~= nil then
 					GetRPName(jailPlayer, function(Firstname, Lastname)
-						TriggerClientEvent('chat:addMessage', -1, { args = { "JUDGE",  Firstname .. " " .. Lastname .. " Is now in jail for the reason: " .. args[3] }, color = { 249, 166, 0 } })
 					end)
 				end
 			else
-				TriggerClientEvent("esx:showNotification", src, "This time is invalid!")
+				if Config.NEWNotif then
+					TriggerClientEvent('mythic_notify:client:SendAlert', src, { type = 'error', text = Config.WorngTime})
+				else
+					TriggerClientEvent("esx:showNotification", src,  Config.WorngTime)
+				end
 			end
 		else
-			TriggerClientEvent("esx:showNotification", src, "This ID is not online!")
+			if Config.NEWNotif then
+				TriggerClientEvent('mythic_notify:client:SendAlert', src, { type = 'error', text = Config.NotOnline})
+			else
+				TriggerClientEvent("esx:showNotification", src,  Config.NotOnline)
+			end
 		end
 	else
-		TriggerClientEvent("esx:showNotification", src, "You are not an officer!")
+		if Config.NEWNotif then
+			TriggerClientEvent('mythic_notify:client:SendAlert', src, { type = 'error', text = Config.NotPD})
+		else
+			TriggerClientEvent("esx:showNotification", src,  Config.NotPD)
+		end
 	end
+	
 end)
 
-RegisterCommand("unjail", function(src, args)
+RegisterCommand(Config.UnjailCommand, function(src, args)
 
 	local xPlayer = ESX.GetPlayerFromId(src)
 
-	if xPlayer["job"]["name"] == "police" then
+	if xPlayer["job"]["name"] == Config.Job then
 
 		local jailPlayer = args[1]
 
 		if GetPlayerName(jailPlayer) ~= nil then
 			UnJail(jailPlayer)
 		else
-			TriggerClientEvent("esx:showNotification", src, "This ID is not online!")
+			if Config.NEWNotif then
+				TriggerClientEvent('mythic_notify:client:SendAlert', src, { type = 'error', text = Config.NotOnline})
+			else
+				TriggerClientEvent("esx:showNotification", src,  Config.NotOnline)
+			end
 		end
 	else
-		TriggerClientEvent("esx:showNotification", src, "You are not an officer!")
+		if Config.NEWNotif then
+			TriggerClientEvent('mythic_notify:client:SendAlert', src, { type = 'error', text = Config.NotPD})
+		else
+			TriggerClientEvent("esx:showNotification", src,  Config.NotPD)
+		end
 	end
 end)
 
-RegisterServerEvent("esx-qalle-jail:jailPlayer")
-AddEventHandler("esx-qalle-jail:jailPlayer", function(targetSrc, jailTime, jailReason)
+RegisterServerEvent("proste-jail:jailPlayer")
+AddEventHandler("proste-jail:jailPlayer", function(targetSrc, jailTime, jailReason)
 	local src = source
 	local targetSrc = tonumber(targetSrc)
+	local prisoner = GetPlayerName(targetSrc)
 
 	JailPlayer(targetSrc, jailTime)
 
 	GetRPName(targetSrc, function(Firstname, Lastname)
-		TriggerClientEvent('chat:addMessage', -1, { args = { "JUDGE",  Firstname .. " " .. Lastname .. " Is now in jail for the reason: " .. jailReason }, color = { 249, 166, 0 } })
+	-- (chat message)
 	end)
-
-	TriggerClientEvent("esx:showNotification", src, GetPlayerName(targetSrc) .. " Jailed for " .. jailTime .. " minutes!")
+	if Config.NEWNotif then
+		TriggerClientEvent("GTA_NUI_ShowNotif_client", src, Config.PlayerTxt..""..prisoner..""..Config.PlayerInf..""..jailTime.. " -m", "success")
+		print('Tohle jsem upravil já (Ice Cube#4366) ty sračko :) jestli dáš pryč to nolimit, ukradnu ti bagetu.. :)')
+	else
+		TriggerClientEvent("esx:showNotification", src, Config.PlayerTxt..""..prisoner..""..Config.PlayerInf..""..jailTime.. " -m")
+		print('Tohle jsem upravil já (Ice Cube#4366) ty sračko :) jestli dáš pryč to nolimit, ukradnu ti bagetu.. :)')
+	end
 end)
 
-RegisterServerEvent("esx-qalle-jail:unJailPlayer")
-AddEventHandler("esx-qalle-jail:unJailPlayer", function(targetIdentifier)
+RegisterServerEvent("proste-jail:unJailPlayer")
+AddEventHandler("proste-jail:unJailPlayer", function(targetIdentifier)
 	local src = source
 	local xPlayer = ESX.GetPlayerFromIdentifier(targetIdentifier)
 
@@ -83,36 +113,28 @@ AddEventHandler("esx-qalle-jail:unJailPlayer", function(targetIdentifier)
 			}
 		)
 	end
-
-	TriggerClientEvent("esx:showNotification", src, xPlayer.name .. " Unjailed!")
+	if Config.NEWNotif then
+		TriggerClientEvent('mythic_notify:client:SendAlert', src, { type = 'success', text = Config.PlayerTxt..''..xPlayer.name..''..Config.WasRelesed})
+	else
+		TriggerClientEvent("esx:showNotification", src, Config.PlayerTxt..''..xPlayer.name..''..Config.WasRelesed)
+	end
 end)
 
-RegisterServerEvent("esx-qalle-jail:updateJailTime")
-AddEventHandler("esx-qalle-jail:updateJailTime", function(newJailTime)
+RegisterServerEvent("proste-jail:updateJailTime")
+AddEventHandler("proste-jail:updateJailTime", function(newJailTime)
 	local src = source
 
 	EditJailTime(src, newJailTime)
 end)
 
-RegisterServerEvent("esx-qalle-jail:prisonWorkReward")
-AddEventHandler("esx-qalle-jail:prisonWorkReward", function()
-	local src = source
-
-	local xPlayer = ESX.GetPlayerFromId(src)
-
-	xPlayer.addMoney(math.random(13, 21))
-
-	TriggerClientEvent("esx:showNotification", src, "Thanks, here you have som cash for food!")
-end)
-
 function JailPlayer(jailPlayer, jailTime)
-	TriggerClientEvent("esx-qalle-jail:jailPlayer", jailPlayer, jailTime)
+	TriggerClientEvent("proste-jail:jailPlayer", jailPlayer, jailTime)
 
 	EditJailTime(jailPlayer, jailTime)
 end
 
 function UnJail(jailPlayer)
-	TriggerClientEvent("esx-qalle-jail:unJailPlayer", jailPlayer)
+	TriggerClientEvent("proste-jail:unJailPlayer", jailPlayer)
 
 	EditJailTime(jailPlayer, 0)
 end
@@ -143,7 +165,7 @@ function GetRPName(playerId, data)
 	end)
 end
 
-ESX.RegisterServerCallback("esx-qalle-jail:retrieveJailedPlayers", function(source, cb)
+ESX.RegisterServerCallback("proste-jail:retrieveJailedPlayers", function(source, cb)
 	
 	local jailedPersons = {}
 
@@ -157,7 +179,7 @@ ESX.RegisterServerCallback("esx-qalle-jail:retrieveJailedPlayers", function(sour
 	end)
 end)
 
-ESX.RegisterServerCallback("esx-qalle-jail:retrieveJailTime", function(source, cb)
+ESX.RegisterServerCallback("proste-jail:retrieveJailTime", function(source, cb)
 
 	local src = source
 

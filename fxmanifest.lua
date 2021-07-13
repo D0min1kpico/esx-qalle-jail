@@ -1,21 +1,18 @@
---	esx-qalle-jail
---		2018
---		Carl "Qalle"
---		2018
---	esx-qalle-jail
-
 resource_manifest_version '44febabe-d386-4d18-afbe-5e627f4af937'
-
-description "Jail Script With Working Job"
+fx_version 'bodacious' --adamant
+games {'gta5'}
+author 'NLRP'
 
 server_scripts {
 	"@mysql-async/lib/MySQL.lua",
 	"config.lua",
+	"configlocal.lua",
 	"server/server.lua"
 }
 
 client_scripts {
 	"config.lua",
+	"configlocal.lua",
 	"client/utils.lua",
 	"client/client.lua"
 }

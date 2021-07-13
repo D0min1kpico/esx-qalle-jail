@@ -21,27 +21,20 @@ Citizen.CreateThread(function()
 		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 		Citizen.Wait(0)
 	end
-
 	while ESX.GetPlayerData() == nil do
 		Citizen.Wait(10)
 	end
-
 	PlayerData = ESX.GetPlayerData()
-
 	LoadTeleporters()
 end)
 
 RegisterNetEvent("esx:playerLoaded")
 AddEventHandler("esx:playerLoaded", function(newData)
 	PlayerData = newData
-
 	Citizen.Wait(25000)
-
-	ESX.TriggerServerCallback("esx-qalle-jail:retrieveJailTime", function(inJail, newJailTime)
+	ESX.TriggerServerCallback("proste-jail:retrieveJailTime", function(inJail, newJailTime)
 		if inJail then
-
 			jailTime = newJailTime
-
 			JailLogin()
 		end
 	end)
@@ -52,147 +45,85 @@ AddEventHandler("esx:setJob", function(response)
 	PlayerData["job"] = response
 end)
 
-RegisterNetEvent("esx-qalle-jail:openJailMenu")
-AddEventHandler("esx-qalle-jail:openJailMenu", function()
+RegisterNetEvent("proste-jail:openJailMenu")
+AddEventHandler("proste-jail:openJailMenu", function()
 	OpenJailMenu()
 end)
 
-RegisterNetEvent("esx-qalle-jail:jailPlayer")
-AddEventHandler("esx-qalle-jail:jailPlayer", function(newJailTime)
+RegisterNetEvent("proste-jail:jailPlayer")
+AddEventHandler("proste-jail:jailPlayer", function(newJailTime)
 	jailTime = newJailTime
-
 	Cutscene()
 end)
 
-RegisterNetEvent("esx-qalle-jail:unJailPlayer")
-AddEventHandler("esx-qalle-jail:unJailPlayer", function()
+RegisterNetEvent("proste-jail:unJailPlayer")
+AddEventHandler("proste-jail:unJailPlayer", function()
 	jailTime = 0
-
 	UnJail()
 end)
 
 function JailLogin()
 	local JailPosition = Config.JailPositions["Cell"]
 	SetEntityCoords(PlayerPedId(), JailPosition["x"], JailPosition["y"], JailPosition["z"] - 1)
-
-	ESX.ShowNotification("Last time you went to sleep you were jailed, because of that you are now put back!")
-
+	if Config.NEWNotif then	
+		TriggerEvent('mythic_notify:client:SendAlert', {type = 'inform', text = Config.LeftWhileJailed, length = 2500})
+	else
+		ESX.ShowNotification(Config.LeftWhileJailed)
+	end
 	InJail()
 end
 
 function UnJail()
 	InJail()
-
-	ESX.Game.Teleport(PlayerPedId(), Config.Teleports["Boiling Broke"])
-
+	SetEntityCoords(GetPlayerPed(-1), 1848.47, 2585.39, 45.67)
 	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
 		TriggerEvent('skinchanger:loadSkin', skin)
 	end)
-
-	ESX.ShowNotification("You are released, stay calm outside! Good LucK!")
+	if Config.NEWNotif then
+		exports.GTA_Notif:GTA_NUI_ShowNotification({ text = Config.JailRelese,  type = 'success' }) 
+	else
+		ESX.ShowNotification(Config.JailRelese)
+	end
 end
 
 function InJail()
 
-	--Jail Timer--
 
 	Citizen.CreateThread(function()
 
 		while jailTime > 0 do
-
 			jailTime = jailTime - 1
-
-			ESX.ShowNotification("You have " .. jailTime .. " minutes left in jail!")
-
-			TriggerServerEvent("esx-qalle-jail:updateJailTime", jailTime)
-
+			if Config.NEWNotif then
+				exports['swt_notifications']:Success(Config.TimeLeft1..''..jailTime.. ''..Config.TimeLeft2, "Vězení", "left", 2500, true)
+			else
+				ESX.ShowNotification(Config.TimeLeft1..''..jailTime.. ''..Config.TimeLeft2)
+			end
+			TriggerServerEvent("proste-jail:updateJailTime", jailTime)
 			if jailTime == 0 then
 				UnJail()
-
-				TriggerServerEvent("esx-qalle-jail:updateJailTime", 0)
+				TriggerServerEvent("proste-jail:updateJailTime", 0)
 			end
-
 			Citizen.Wait(60000)
 		end
-
 	end)
-
-	--Jail Timer--
-
-	--Prison Work--
-
-	Citizen.CreateThread(function()
-		while jailTime > 0 do
-			
-			local sleepThread = 500
-
-			local Packages = Config.PrisonWork["Packages"]
-
-			local Ped = PlayerPedId()
-			local PedCoords = GetEntityCoords(Ped)
-
-			for posId, v in pairs(Packages) do
-
-				local DistanceCheck = GetDistanceBetweenCoords(PedCoords, v["x"], v["y"], v["z"], true)
-
-				if DistanceCheck <= 10.0 then
-
-					sleepThread = 5
-
-					local PackageText = "Pack"
-
-					if not v["state"] then
-						PackageText = "Already Taken"
-					end
-
-					ESX.Game.Utils.DrawText3D(v, "[E] " .. PackageText, 0.4)
-
-					if DistanceCheck <= 1.5 then
-
-						if IsControlJustPressed(0, 38) then
-
-							if v["state"] then
-								PackPackage(posId)
-							else
-								ESX.ShowNotification("You've already taken this package!")
-							end
-
-						end
-
-					end
-
-				end
-
-			end
-
-			Citizen.Wait(sleepThread)
-
-		end
-	end)
-
-	--Prison Work--
-
 end
 
 function LoadTeleporters()
 	Citizen.CreateThread(function()
 		while true do
-			
 			local sleepThread = 500
-
 			local Ped = PlayerPedId()
 			local PedCoords = GetEntityCoords(Ped)
 
 			for p, v in pairs(Config.Teleports) do
-
 				local DistanceCheck = GetDistanceBetweenCoords(PedCoords, v["x"], v["y"], v["z"], true)
-
-				if DistanceCheck <= 7.5 then
-
+				if DistanceCheck <= Config.DrawTextDistance then
 					sleepThread = 5
-
-					ESX.Game.Utils.DrawText3D(v, "[E] Open Door", 0.4)
-
+					if Config.NLRP_Core == true then
+						exports['nlrp_core']:DrawText3D(v.x, v.y, v.z, tostring(Config.DoorMessage))
+					elseif Config.NLRP_Core == false then
+						ESX.Game.Utils.DrawText3D(v.x, v.y, v.z, Config.DoorMessage)
+					end
 					if DistanceCheck <= 1.0 then
 						if IsControlJustPressed(0, 38) then
 							TeleportPlayer(v)
@@ -200,115 +131,23 @@ function LoadTeleporters()
 					end
 				end
 			end
-
 			Citizen.Wait(sleepThread)
-
 		end
 	end)
 end
 
-function PackPackage(packageId)
-	local Package = Config.PrisonWork["Packages"][packageId]
-
-	LoadModel("prop_cs_cardbox_01")
-
-	local PackageObject = CreateObject(GetHashKey("prop_cs_cardbox_01"), Package["x"], Package["y"], Package["z"], true)
-
-	PlaceObjectOnGroundProperly(PackageObject)
-
-	TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_BIN", 0, false)
-
-	local Packaging = true
-	local StartTime = GetGameTimer()
-
-	while Packaging do
-		
-		Citizen.Wait(1)
-
-		local TimeToTake = 60000 * 1.20 -- Minutes
-		local PackPercent = (GetGameTimer() - StartTime) / TimeToTake * 100
-
-		if not IsPedUsingScenario(PlayerPedId(), "PROP_HUMAN_BUM_BIN") then
-			DeleteEntity(PackageObject)
-
-			ESX.ShowNotification("Canceled!")
-
-			Packaging = false
-		end
-
-		if PackPercent >= 100 then
-
-			Packaging = false
-
-			DeliverPackage(PackageObject)
-
-			Package["state"] = false
-		else
-			ESX.Game.Utils.DrawText3D(Package, "Packaging... " .. math.ceil(tonumber(PackPercent)) .. "%", 0.4)
-		end
-		
-	end
-end
-
-function DeliverPackage(packageId)
-	if DoesEntityExist(packageId) then
-		AttachEntityToEntity(packageId, PlayerPedId(), GetPedBoneIndex(PlayerPedId(),  28422), 0.0, -0.03, 0.0, 5.0, 0.0, 0.0, 1, 1, 0, 1, 0, 1)
-
-		ClearPedTasks(PlayerPedId())
-	else
-		return
-	end
-
-	local Packaging = true
-
-	LoadAnim("anim@heists@box_carry@")
-
-	while Packaging do
-
-		Citizen.Wait(5)
-
-		if not IsEntityPlayingAnim(PlayerPedId(), "anim@heists@box_carry@", "idle", 3) then
-			TaskPlayAnim(PlayerPedId(), "anim@heists@box_carry@", "idle", 8.0, 8.0, -1, 50, 0, false, false, false)
-		end
-
-		if not IsEntityAttachedToEntity(packageId, PlayerPedId()) then
-			Packaging = false
-			DeleteEntity(packageId)
-		else
-			local DeliverPosition = Config.PrisonWork["DeliverPackage"]
-			local PedPosition = GetEntityCoords(PlayerPedId())
-			local DistanceCheck = GetDistanceBetweenCoords(PedPosition, DeliverPosition["x"], DeliverPosition["y"], DeliverPosition["z"], true)
-
-			ESX.Game.Utils.DrawText3D(DeliverPosition, "[E] Leave Package", 0.4)
-
-			if DistanceCheck <= 2.0 then
-				if IsControlJustPressed(0, 38) then
-					DeleteEntity(packageId)
-					ClearPedTasksImmediately(PlayerPedId())
-					Packaging = false
-
-					TriggerServerEvent("esx-qalle-jail:prisonWorkReward")
-				end
-			end
-		end
-
-	end
-
-end
 
 function OpenJailMenu()
 	ESX.UI.Menu.Open(
 		'default', GetCurrentResourceName(), 'jail_prison_menu',
 		{
-			title    = "Prison Menu",
-			align    = 'center',
+			title    = Config.MenuLang["title"],
+			align    = Config.MenuAlign,
 			elements = {
-				{ label = "Jail Closest Person", value = "jail_closest_player" },
-				{ label = "Unjail Person", value = "unjail_player" }
+				{ label = Config.MenuLang["unjail"], value = "unjail_player" }
 			}
 		}, 
 	function(data, menu)
-
 		local action = data.current.value
 
 		if action == "jail_closest_player" then
@@ -318,42 +157,58 @@ function OpenJailMenu()
 			ESX.UI.Menu.Open(
           		'dialog', GetCurrentResourceName(), 'jail_choose_time_menu',
           		{
-            		title = "Jail Time (minutes)"
+            		title = Config.MenuLang["dialog_title"]
           		},
           	function(data2, menu2)
 
             	local jailTime = tonumber(data2.value)
 
             	if jailTime == nil then
-              		ESX.ShowNotification("The time needs to be in minutes!")
+					if Config.NEWNotif then
+						TriggerEvent('mythic_notify:client:SendAlert', {type = 'error', text = Config.MustMin, length = 2500})
+					else
+						ESX.ShowNotification(Config.MustMin)
+					end
             	else
               		menu2.close()
 
               		local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 
               		if closestPlayer == -1 or closestDistance > 3.0 then
-                		ESX.ShowNotification("No players nearby!")
+						if Config.NEWNotif then
+							TriggerEvent('mythic_notify:client:SendAlert', {type = 'error', text = Config.NoNerby, length = 2500})
+						else
+							ESX.ShowNotification(Config.NoNerby)
+						end
 					else
 						ESX.UI.Menu.Open(
 							'dialog', GetCurrentResourceName(), 'jail_choose_reason_menu',
 							{
-							  title = "Jail Reason"
+							  title = Config.MenuLang["dialog_reason"]
 							},
 						function(data3, menu3)
 		  
 						  	local reason = data3.value
 		  
 						  	if reason == nil then
-								ESX.ShowNotification("You need to put something here!")
+								if Config.NEWNotif then
+									TriggerEvent('mythic_notify:client:SendAlert', {type = 'inform', text = Config.MustInsert, length = 2500})
+								else
+									ESX.ShowNotification(Config.MustInsert)
+								end
 						  	else
 								menu3.close()
 		  
 								local closestPlayer, closestDistance = ESX.Game.GetClosestPlayer()
 		  
 								if closestPlayer == -1 or closestDistance > 3.0 then
-								  	ESX.ShowNotification("No players nearby!")
+									if Config.NEWNotif then
+										TriggerEvent('mythic_notify:client:SendAlert', {type = 'error', text = Config.NoNerby, length = 2500})
+									else
+										ESX.ShowNotification(Config.NoNerby)
+									end
 								else
-								  	TriggerServerEvent("esx-qalle-jail:jailPlayer", GetPlayerServerId(closestPlayer), jailTime, reason)
+								  	TriggerServerEvent("proste-jail:jailPlayer", GetPlayerServerId(closestPlayer), jailTime, reason)
 								end
 		  
 						  	end
@@ -372,29 +227,33 @@ function OpenJailMenu()
 
 			local elements = {}
 
-			ESX.TriggerServerCallback("esx-qalle-jail:retrieveJailedPlayers", function(playerArray)
+			ESX.TriggerServerCallback("proste-jail:retrieveJailedPlayers", function(playerArray)
 
 				if #playerArray == 0 then
-					ESX.ShowNotification("Your jail is empty!")
+					if Config.NEWNotif then
+						TriggerEvent('mythic_notify:client:SendAlert', {type = 'error', text = Config.NOED, length = 2500})
+					else
+						ESX.ShowNotification(Config.NOED)
+					end
 					return
 				end
 
 				for i = 1, #playerArray, 1 do
-					table.insert(elements, {label = "Prisoner: " .. playerArray[i].name .. " | Jail Time: " .. playerArray[i].jailTime .. " minutes", value = playerArray[i].identifier })
+					table.insert(elements, {label = Config.MenuLang["name"].."" .. playerArray[i].name .. " | "..Config.MenuLang["time"].. " " .. playerArray[i].jailTime .. " -m", value = playerArray[i].identifier })
 				end
 
 				ESX.UI.Menu.Open(
 					'default', GetCurrentResourceName(), 'jail_unjail_menu',
 					{
-						title = "Unjail Player",
-						align = "center",
+						title = Config.MenuLang["unjail_title"],
+						align = Config.MenuAlign,
 						elements = elements
 					},
 				function(data2, menu2)
 
 					local action = data2.current.value
 
-					TriggerServerEvent("esx-qalle-jail:unJailPlayer", action)
+					TriggerServerEvent("proste-jail:unJailPlayer", action)
 
 					menu2.close()
 
@@ -409,4 +268,3 @@ function OpenJailMenu()
 		menu.close()
 	end)	
 end
-

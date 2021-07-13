@@ -1,85 +1,125 @@
 Config = {}
 
-Config.JailPositions = {
-	["Cell"] = { ["x"] = 1799.8345947266, ["y"] = 2489.1350097656, ["z"] = -119.02998352051, ["h"] = 179.03021240234 }
+Config.Job = 'police'
+Config.JobGrade = 'boss'
+
+Config.NEWNotif = true
+
+Config.JailCommand = "jail"
+Config.UnjailCommand = "unjail"
+Config.MenuCommand = "jailmenu"
+Config.NLRP_Core = false
+
+Config.DrawTextDistance = 5.0
+
+---config.cs
+
+Config.DoorMessage = 'Zmáčkni ~g~[E]~s~ pro otevření dveří'
+Config.JailRelese = 'Tvůj trest byl odpikán!\nNyní jsi na svobodě.'
+Config.LeftWhileJailed = 'Než jsi opustil město, byl jsi uvězněn. V důsledku jsi byl navrácen zpět do cely!'
+Config.NotOnline = 'Hráč s tímto ID není online!'
+Config.NotPD = 'Nejsi Policista!'
+Config.WrongTime = 'Neplatný čas!'
+Config.WorkReward = 'Zde máš nějaké peníze na jídlo a pití.'
+Config.PackageTaken = 'Již jsi vzal tento balíček'
+Config.MustMin = 'Čas musí být v minutách'
+Config.NoNerby = 'Žádný hráč poblíž!'
+Config.MustInsert = 'Musíš zde něco vložit!'
+Config.NOED = 'Vězení je prázdné Sedge'
+Config.NoKeys = 'Nemáš klíče!'
+Config.TimeLeft1 = 'Zbýva ti: '
+Config.TimeLeft2 = ' minut v cele!'
+Config.NoPerms = 'Nejsi dostatečně velká pozice, aby jsi mohl použít tuto funkci!'
+-----
+Config.PlayerTxt = 'Hráč: '
+Config.PlayerInf = '\n Byl poslán do vězení!\nČas: '
+Config.WasRelesed = ' Byl pro puštěn z vězení!'
+
+Config.MenuAlign = 'center'
+Config.MenuLang = {
+	["title"] = 'Vězeňské menu',
+	["unjail_title"] = 'Propustit z vězení',
+	["unjail"] = 'Propustit z vězení',
+	["dialog_title"] = 'Čas ve vězení (minuty)',
+	["dialog_reason"] = 'Důvod',
+	["name"] = 'Vězen: ',
+	["time"] = 'Čas: ',
+	["tp_title"] = 'Zvol místo'
 }
 
+
+---config.en
+
+--[[Config.DoorMessage = 'Press [E] to open the door'
+Config.JailRelese = 'Your punishment has been served!\nYou are now free.'
+Config.LeftWhileJailed = 'Before you left town, you were imprisoned. As a result, you have been returned to the cell!'
+Config.NotOnline = 'The player with this ID is not online!'
+Config.NotPD = 'You re not a cop!'
+Config.WrongTime = 'Invalid time!'
+Config.WorkReward = 'Here s some money for food and drink.'
+Config.PackageTaken = 'You have already taken this package'
+Config.MustMin = 'Time must be in minutes'
+Config.NoNerby = 'No player nearby!'
+Config.MustInsert = 'You have to insert something here!'
+Config.NOED = 'The prison is an empty sedge'
+Config.NoKeys = 'You don t have the keys!'
+Config.TimeLeft1 = 'You have left: '
+Config.TimeLeft2 = ' minutes in the cell!'
+Config.NoPerms = 'You are not large enough to use this feature!'
+-----
+Config.PlayerTxt = 'Player: '
+Config.PlayerInf = '\n He was sent to prison!\nTime: '
+Config.WasRelesed = ' He was released from prison!'
+
+Config.MenuAlign = 'center'
+Config.MenuLang = {
+	["title"] = 'Prison menu',
+	["unjail_title"] = 'Release from prison',
+	["unjail"] = 'Release from prison',
+	["dialog_title"] = 'Prison time (minutes)',
+	["dialog_reason"] = 'Reason',
+	["name"] = 'Prisoner: ',
+	["time"] = 'Time: ',
+	["tp_title"] = 'Choose a place'
+}]]--
+
+Config.JailPositions = {["Cell"] = { ["x"] = 1799.8345947266, ["y"] = 2489.1350097656, ["z"] = -119.02998352051, ["h"] = 179.03021240234 }}
 Config.Cutscene = {
 	["PhotoPosition"] = { ["x"] = 402.91567993164, ["y"] = -996.75970458984, ["z"] = -99.000259399414, ["h"] = 186.22499084473 },
-
 	["CameraPos"] = { ["x"] = 402.88830566406, ["y"] = -1003.8851318359, ["z"] = -97.419647216797, ["rotationX"] = -15.433070763946, ["rotationY"] = 0.0, ["rotationZ"] = -0.31496068835258, ["cameraId"] = 0 },
-
 	["PolicePosition"] = { ["x"] = 402.91702270508, ["y"] = -1000.6376953125, ["z"] = -99.004028320313, ["h"] = 356.88052368164 }
 }
 
-Config.PrisonWork = {
-	["DeliverPackage"] = { ["x"] = 1027.2347412109, ["y"] = -3101.419921875, ["z"] = -38.999870300293, ["h"] = 267.89135742188 },
-
-	["Packages"] = {
-		[1] = { ["x"] = 1003.6661987305, ["y"] = -3108.4221191406, ["z"] = -38.999866485596, ["state"] = true },
-		[2] = { ["x"] = 1006.0420532227, ["y"] = -3103.0024414063, ["z"] = -38.999866485596, ["state"] = true },
-		[3] = { ["x"] = 1015.7958374023, ["y"] = -3102.8337402344, ["z"] = -38.99991607666, ["state"] = true },
-		[4] = { ["x"] = 1012.8907470703, ["y"] = -3108.2907714844, ["z"] = -38.999912261963, ["state"] = true },
-		[5] = { ["x"] = 1018.2017822266, ["y"] = -3109.1982421875, ["z"] = -38.999897003174, ["state"] = true },
-		[6] = { ["x"] = 1018.0194091797, ["y"] = -3096.5700683594, ["z"] = -38.999897003174, ["state"] = true },
-		[7] = { ["x"] = 1015.6422119141, ["y"] = -3091.7392578125, ["z"] = -38.999897003174, ["state"] = true },
-		[8] = { ["x"] = 1010.7862548828, ["y"] = -3096.6135253906, ["z"] = -38.999897003174, ["state"] = true },
-		[9] = { ["x"] = 1005.7819824219, ["y"] = -3096.8415527344, ["z"] = -38.999897003174, ["state"] = true },
-		[10] = { ["x"] = 1003.4543457031, ["y"] = -3096.7048339844, ["z"] = -38.999897003174, ["state"] = true }
-	}
+-- You can use it for ever you want.. :D
+Config.Teleports = {
+	["Jail"] = { ["x"] = 1800.6979980469, ["y"] = 2483.0979003906, ["z"] = -122.68814849854, ["h"] = 271.75274658203, ["goal"] = { "Visitor" }},
+	["Visitor"] = { ["x"] = 1691.61, ["y"] = 2566.2, ["z"] = 45.56, ["h"] = 179.94, ["goal"] = { "Jail" }}
 }
 
-Config.Teleports = {
-	["Prison Work"] = { 
-		["x"] = 992.51770019531, 
-		["y"] = -3097.8413085938, 
-		["z"] = -38.995861053467, 
-		["h"] = 81.15771484375, 
-		["goal"] = { 
-			"Jail" 
-		} 
-	},
+-- Idk if it male or female :D it works one like that and one like.. you know what i mean
+Config.FemaleSkin = {
+	['tshirt_1'] = 15,
+	['tshirt_2'] = 0,
+	["torso_1"] = 2,
+	["torso_2"] = 6,
+	["arms"] = 2,
+	["pants_1"] = 2,
+	["pants_2"] = 0,
+	["shoes_1"] = 35,
+	["shoes_2"] = 0,
+	["helmet_1"] = -1
+}
 
-	["Boiling Broke"] = { 
-		["x"] = 1845.6022949219, 
-		["y"] = 2585.8029785156, 
-		["z"] = 45.672061920166, 
-		["h"] = 92.469093322754, 
-		["goal"] = { 
-			"Security" 
-		} 
-	},
-
-	["Jail"] = { 
-		["x"] = 1800.6979980469, 
-		["y"] = 2483.0979003906, 
-		["z"] = -122.68814849854, 
-		["h"] = 271.75274658203, 
-		["goal"] = { 
-			"Prison Work", 
-			"Security", 
-			"Visitor" 
-		} 
-	},
-
-	["Security"] = { 
-		["x"] = 1706.7625732422,
-		["y"] = 2581.0793457031, 
-		["z"] = -69.407371520996, 
-		["h"] = 267.72802734375, 
-		["goal"] = { 
-			"Jail",
-			"Boiling Broke"
-		} 
-	},
-
-	["Visitor"] = {
-		["x"] = 1699.7196044922, 
-		["y"] = 2574.5314941406, 
-		["z"] = -69.403930664063, 
-		["h"] = 169.65020751953, 
-		["goal"] = { 
-			"Jail" 
-		} 
-	}
+-- Idk if it male or female :D it works one like that and one like.. you know what i mean
+Config.MaleSkin = {
+	['tshirt_1'] = 20,
+	['tshirt_2'] = 15,
+	['torso_1'] = 33,
+	['torso_2'] = 0,
+	['arms'] = 0,
+	['pants_1'] = 7,
+	['pants_2'] = 0,
+	['shoes_1'] = 34,
+	['shoes_2'] = 0,
+	["helmet_1"] = -1
 }
